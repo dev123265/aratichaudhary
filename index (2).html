@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Product Dashboard</title>
+    <style>
+        /* --- CSS STYLING --- */
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Login Page Styles */
+        #login-section {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #login-section h2 {
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .error-msg {
+            color: #EF4444;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Product Dashboard Styles */
+        #dashboard-section {
+            display: none; /* Hidden by default */
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+
+        #logout-btn {
+            width: auto;
+            padding: 10px 20px;
+            background-color: #EF4444;
+        }
+
+        #logout-btn:hover {
+            background-color: #DC2626;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .product-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .product-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .buy-btn {
+            width: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-section">
+        <h2>Welcome Back</h2>
+        <form id="login-form">
+            <div class="input-group">
+                <label for="email">Email address</label>
+                <input type="email" id="email" placeholder="user@example.com" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit">Sign In</button>
+            <div class="error-msg" id="error-msg">Please enter valid credentials.</div>
+        </form>
+    </div>
+
+    <div id="dashboard-section">
+        <header>
+            <h2>Available Products</h2>
+            <button id="logout-btn">Log Out</button>
+        </header>
+        <div class="products-grid" id="products-grid">
+            </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginSection = document.getElementById('login-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const loginForm = document.getElementById('login-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const productsGrid = document.getElementById('products-grid');
+
+        // Mock Product Data
+        const products = [
+            { id: 1, icon: "🎧", name: "Pro Wireless Headphones", desc: "Active noise cancellation with 30-hour battery life.", price: "$299" },
+            { id: 2, icon: "⌚", name: "Smart Fitness Watch", desc: "Track your heart rate, sleep, and daily steps effortlessly.", price: "$149" },
+            { id: 3, icon: "💻", name: "UltraBook Pro 15", desc: "High performance laptop for creators and developers.", price: "$1299" },
+            { id: 4, icon: "📷", name: "Mirrorless Camera", desc: "4K video recording with a 24.1 MP APS-C sensor.", price: "$899" },
+            { id: 5, icon: "⌨️", name: "Mechanical Keyboard", desc: "RGB backlit keys with tactile mechanical switches.", price: "$120" },
+            { id: 6, icon: "📱", name: "Smartphone X", desc: "Next-gen processor with edge-to-edge OLED display.", price: "$999" }
+        ];
+
+        // Handle Login Submission
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent page reload
+            
+            // In a real app, you would validate credentials here.
+            // For this demo, we just transition to the dashboard.
+            
+            loginSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+            
+            // Align the body to the top instead of centering once logged in
+            document.body.style.alignItems = 'flex-start';
+            
+            renderProducts();
+        });
+
+        // Handle Logout
+        logoutBtn.addEventListener('click', function() {
+            dashboardSection.style.display = 'none';
+            loginSection.style.display = 'block';
+            
+            // Reset body alignment to center the login box
+            document.body.style.alignItems = 'center';
+            loginForm.reset();
+        });
+
+        // Render Products to the DOM
+        function renderProducts() {
+            productsGrid.innerHTML = ''; // Clear existing
+            
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                card.innerHTML = `
+                    <div class="product-icon">${product.icon}</div>
+                    <div class="product-title">${product.name}</div>
+                    <div class="product-desc">${product.desc}</div>
+                    <div class="product-footer">
+                        <div class="product-price">${product.price}</div>
+                        <button class="buy-btn">Add to Cart</button>
+                    </div>
+                `;
+                
+                productsGrid.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
